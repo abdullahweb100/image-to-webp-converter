@@ -23,13 +23,18 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 35
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-
-      - name: Install Android SDK 35
-        run: yes | sdkmanager --licenses >/dev/null && sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build APK
         working-directory: bhawani-app
@@ -51,11 +56,3 @@ jobs:
           name: Bhawani-Commission-Agent
           path: bhawani-release/Bhawani-Commission-Agent.apk
           if-no-files-found: error
-
-      - name: Save verified APK to branch
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f bhawani-release/Bhawani-Commission-Agent.apk
-          git diff --cached --quiet || git commit -m "Build verified Bhawani APK"
-          git push origin HEAD:bhawani-apk-build
