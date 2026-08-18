@@ -5,12 +5,17 @@ on:
     branches: [ bhawani-apk-build ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: bhawani-apk-build
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -31,16 +36,26 @@ jobs:
         run: gradle --no-daemon assembleDebug
 
       - name: Prepare final APK
-        run: cp bhawani-app/app/build/outputs/apk/debug/app-debug.apk Bhawani-Commission-Agent.apk
+        run: |
+          mkdir -p bhawani-release
+          cp bhawani-app/app/build/outputs/apk/debug/app-debug.apk bhawani-release/Bhawani-Commission-Agent.apk
 
       - name: Verify APK
         run: |
-          $ANDROID_HOME/build-tools/35.0.0/aapt dump badging Bhawani-Commission-Agent.apk | head -20
-          $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose Bhawani-Commission-Agent.apk
+          $ANDROID_HOME/build-tools/35.0.0/aapt dump badging bhawani-release/Bhawani-Commission-Agent.apk | head -20
+          $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose bhawani-release/Bhawani-Commission-Agent.apk
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: Bhawani-Commission-Agent
-          path: Bhawani-Commission-Agent.apk
+          path: bhawani-release/Bhawani-Commission-Agent.apk
           if-no-files-found: error
+
+      - name: Save verified APK to branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f bhawani-release/Bhawani-Commission-Agent.apk
+          git diff --cached --quiet || git commit -m "Build verified Bhawani APK"
+          git push origin HEAD:bhawani-apk-build
