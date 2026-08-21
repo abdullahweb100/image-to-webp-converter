@@ -1,0 +1,4 @@
+<resources>
+<style name="Theme.Toolivo" parent="Theme.MaterialComponents.DayNight.NoActionBar"><item name="colorPrimary">@color/toolivo_primary</item><item name="colorPrimaryVariant">@color/toolivo_primary_dark</item><item name="colorSecondary">@color/toolivo_accent</item><item name="android:fontFamily">sans</item><item name="android:statusBarColor">@color/toolivo_bg</item><item name="android:navigationBarColor">@color/toolivo_card</item></style>
+<style name="Theme.Toolivo.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar"><item name="android:windowBackground">@drawable/splash_bg</item><item name="android:statusBarColor">@color/toolivo_primary</item><item name="android:navigationBarColor">@color/toolivo_primary</item></style>
+</resources>
